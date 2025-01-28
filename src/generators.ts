@@ -46,10 +46,16 @@ class Generators {
 
     private createReadme = () => {
 
+        let badges = '';
+        badges += `[![npm](https://img.shields.io/npm/v/${this._packageName})](https://www.npmjs.com/package/${this._packageName}) `;
+        badges += `[![npm](https://img.shields.io/npm/dt/${this._packageName})](https://www.npmjs.com/package/${this._packageName}) `;
+        badges += `[![npm](https://img.shields.io/npm/l/${this._packageName})](https://www.npmjs.com/package/${this._packageName})`;
+
         let readmeStr = "";
         const addLine = (line: string, newlines: number = 2) => readmeStr += line + "\n".repeat(newlines);
 
         addLine(`# ${this._packageName}`);
+        addLine(badges);
         addLine(`A brief description of your package goes here`);
 
         addLine('## 📦 Installation');
@@ -136,6 +142,7 @@ class Generators {
 
     private initWorkflows = () => {
         shell.cd(this._packageDirectory);
+        shell.exec('npm i -g @changesets/cli --silent');
         shell.exec('npx changeset init > nul 2>&1');
 
         const workflowDirectory = this._packageDirectory + "/.github/workflows";
@@ -215,8 +222,19 @@ class Generators {
         fs.writeFileSync(testDirectory + "/index.test.ts", testBoilerplate);
 
         const mocharcPath = this._packageDirectory + "/.mocharc.json";
-        const mocharc = {"require":"ts-node/register","extension":["ts"],"spec":"./test/**/*.test{.js,.ts}","node-option":["loader=ts-node/esm"],"recursive":true,"timeout":5000};
-        fs.writeFileSync(mocharcPath, JSON.stringify(mocharc, null, 2));
+        const mocharc = {
+            "require": "ts-node/register",
+            "extension": [
+                "ts"
+            ],
+            "spec": "./test/**/*.test{.js,.ts}",
+            "node-option": [
+                "loader=ts-node/esm"
+            ],
+            "recursive": true,
+            "timeout": 5000
+        };
+        fs.writeFileSync(mocharcPath, JSON.stringify(mocharc, null, 2) + "\n");
 
         shell.cd(this._packageDirectory);
         shell.exec('tsc --init > nul 2>&1');
@@ -224,7 +242,7 @@ class Generators {
         const tsconfigPath = this._packageDirectory  + '/tsconfig.json';
         const tsconfig = commentJson.parse(fs.readFileSync(tsconfigPath, 'utf8')); // @ts-ignore
         tsconfig.compilerOptions.module = 'es6'; // Allows for tests to run
-        fs.writeFileSync(tsconfigPath, commentJson .stringify(tsconfig, null, 2));
+        fs.writeFileSync(tsconfigPath, commentJson .stringify(tsconfig, null, 2) + "\n");
     }
 }
 
@@ -269,7 +287,7 @@ class PackageJson {
             "lint": "tsc",
             "test": "cross-env TS_NODE_PROJECT='./tsconfig.json' mocha --ui tdd",
             "build": "tsup src/index.ts --format cjs,esm --dts --minify",
-            "deployHelp": "echo \"1) Run 'changeset' 2) Merge changes to main 3) Merge changeset PR 4) npm run deploy (verify it looks good)\"",
+            "deployHelp": "echo 1) Run 'changeset' 2) Merge changes to main 3) Merge changeset PR 4) npm run deploy (verify it looks good)",
             "deploy": "git checkout main && git pull && npm run build && npm publish"
         };
         this._files = [
@@ -309,7 +327,7 @@ class PackageJson {
             result[key.replace('_', '')] = this[key];
         }
 
-        fs.writeFileSync(path.join(this.packageDirectory, "package.json"), JSON.stringify(result, null, 2));
+        fs.writeFileSync(path.join(this.packageDirectory, "package.json"), JSON.stringify(result, null, 2) + "\n");
     }
 
     // Verifies package manager is installed, then installs dependencies
