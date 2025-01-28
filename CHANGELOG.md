@@ -1,5 +1,16 @@
 # npm-package-factory
 
+## 2.1.0
+
+### Minor Changes
+
+- c4757a9: \* Added badges to the README generation
+  - Install changesets when generating package
+  - Added newlines to the end of generated files
+  - Added badges to this package's README
+  - Added repository URL to this package
+  - Fixed package name in installation example
+
 ## 2.0.0
 
 ### Major Changes
