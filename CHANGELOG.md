@@ -1,5 +1,11 @@
 # npm-package-factory
 
+## 2.2.0
+
+### Minor Changes
+
+- b81382c: Updated spacing for README badges
+
 ## 2.1.0
 
 ### Minor Changes
