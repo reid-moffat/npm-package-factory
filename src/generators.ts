@@ -47,8 +47,8 @@ class Generators {
     private createReadme = () => {
 
         let badges = '';
-        badges += `[![npm](https://img.shields.io/npm/v/${this._packageName})](https://www.npmjs.com/package/${this._packageName}) `;
-        badges += `[![npm](https://img.shields.io/npm/dt/${this._packageName})](https://www.npmjs.com/package/${this._packageName}) `;
+        badges += `[![npm](https://img.shields.io/npm/v/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
+        badges += `[![npm](https://img.shields.io/npm/dt/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
         badges += `[![npm](https://img.shields.io/npm/l/${this._packageName})](https://www.npmjs.com/package/${this._packageName})`;
 
         let readmeStr = "";
