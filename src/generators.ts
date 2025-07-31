@@ -28,6 +28,7 @@ class Generators {
         this.createLicense();
         this.createTodoList();
         this.initGitRepo();
+        this.initChangesets();
         this.initWorkflows();
         process.stdout.write(logSymbols.success + " Development files created    \n");
 
@@ -122,11 +123,13 @@ class Generators {
         this._packageJson.installDependencies();
     }
 
-    private initWorkflows = () => {
+    private initChangesets = () => {
         shell.cd(this._packageDirectory);
         shell.exec('npm i -g @changesets/cli --silent');
         shell.exec('npx changeset init > nul 2>&1');
+    }
 
+    private initWorkflows = () => {
         // Make workflow directory
         const workflowDirectory: string = this._packageDirectory + "/.github/workflows";
         fs.mkdirSync(workflowDirectory, { recursive: true });
