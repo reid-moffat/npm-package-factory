@@ -220,12 +220,13 @@ class PackageJson {
             "@types/chai",
             "@types/mocha",
             "@types/node",
+            "chai",
             "cross-env",
             "mocha",
-            "chai",
+            "suite-metrics",
+            "ts-node",
             "tsup",
-            "typescript",
-            "ts-node"
+            "typescript"
         ];
         this.packageDirectory = packageDirectory;
     }
