@@ -127,68 +127,20 @@ class Generators {
         shell.exec('npm i -g @changesets/cli --silent');
         shell.exec('npx changeset init > nul 2>&1');
 
-        const workflowDirectory = this._packageDirectory + "/.github/workflows";
+        // Make workflow directory
+        const workflowDirectory: string = this._packageDirectory + "/.github/workflows";
         fs.mkdirSync(workflowDirectory, { recursive: true });
 
-        const pushYml =
-            "name: CI\n" +
-            "on:\n" +
-            "  push:\n" +
-            "    branches:\n" +
-            "      - \"**\"\n\n" +
-            "jobs:\n" +
-            "  test:\n" +
-            "    runs-on: ubuntu-latest\n" +
-            "    steps:\n" +
-            "      - name: Checkout\n" +
-            "        uses: actions/checkout@v4\n" +
-            "      - name: Setup pnpm\n" +
-            "        uses: pnpm/action-setup@v4\n" +
-            "        with:\n" +
-            "          version: 9.5.0\n" +
-            "      - name: Setup node\n" +
-            "        uses: actions/setup-node@v4\n" +
-            "        with:\n" +
-            "          node-version: 20.x\n" +
-            "          cache: 'pnpm'\n" +
-            "      - name: Install dependencies\n" +
-            "        run: pnpm install --frozen-lockfile\n\n" +
-            "      - name: Run tests\n" +
-            "        run: pnpm run test\n";
-        fs.writeFileSync(workflowDirectory + "/push.yml", pushYml);
+        // Read the template files
+        const testWorkflowPath: string = path.join(__dirname, 'templates', 'test.yml');
+        const testWorkflowContent: string = fs.readFileSync(testWorkflowPath, 'utf8');
 
-        const publishYml =
-            "name: Publish\n" +
-            "on:\n" +
-            "  push:\n" +
-            "    branches:\n" +
-            "      - main\n\n" +
-            "concurrency: ${{ github.workflow }}-${{ github.ref }}\n\n" +
-            "jobs:\n" +
-            "  build:\n" +
-            "    runs-on: ubuntu-latest\n" +
-            "    steps:\n" +
-            "      - name: Checkout\n" +
-            "        uses: actions/checkout@v4\n" +
-            "      - name: Setup pnpm\n" +
-            "        uses: pnpm/action-setup@v4\n" +
-            "        with:\n" +
-            "          version: 9.5.0\n" +
-            "      - name: Setup node\n" +
-            "        uses: actions/setup-node@v4\n" +
-            "        with:\n" +
-            "          node-version: 20.x\n" +
-            "          cache: 'pnpm'\n" +
-            "      - name: Install dependencies\n" +
-            "        run: pnpm install --frozen-lockfile\n\n" +
-            "      - name: Create Release Pull Request or Publish\n" +
-            "        id: changesets\n" +
-            "        uses: changesets/action@v1\n" +
-            "        with:\n" +
-            "          publish: pnpm run build\n" +
-            "        env:\n" +
-            "          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n";
-        fs.writeFileSync(workflowDirectory + "/publish.yml", publishYml);
+        const lintWorkflowPath: string = path.join(__dirname, 'templates', 'lint.yml');
+        const lintWorkflowContent: string = fs.readFileSync(lintWorkflowPath, 'utf8');
+
+        // Write template files
+        fs.writeFileSync(workflowDirectory + "/test.yml", testWorkflowContent);
+        fs.writeFileSync(workflowDirectory + "/lint.yml", lintWorkflowContent);
     }
 
     // Creates source directory, test directory & example, mocharc, tsconfig files
