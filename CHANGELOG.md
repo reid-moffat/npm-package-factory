@@ -1,5 +1,13 @@
 # npm-package-factory
 
+## 2.3.0
+
+### Minor Changes
+
+- 2ef5038: - Improved test workflow with maxtrix testing
+  - Add linting workflow
+  - Minor polishing to generated files
+
 ## 2.2.0
 
 ### Minor Changes
