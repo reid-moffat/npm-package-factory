@@ -45,32 +45,14 @@ class Generators {
     }
 
     private createReadme = () => {
+        // Read the template file
+        const templatePath: string = path.join(__dirname, 'templates', 'README.template.md');
+        const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
-        let badges = '';
-        badges += `[![npm](https://img.shields.io/npm/v/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
-        badges += `[![npm](https://img.shields.io/npm/dt/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
-        badges += `[![npm](https://img.shields.io/npm/l/${this._packageName})](https://www.npmjs.com/package/${this._packageName})`;
+        // Replace all placeholders with the actual package name
+        const readmeContent: string = templateContent.replace(/{{PACKAGE_NAME}}/g, this._packageName);
 
-        let readmeStr = "";
-        const addLine = (line: string, newlines: number = 2) => readmeStr += line + "\n".repeat(newlines);
-
-        addLine(`# ${this._packageName}`);
-        addLine(badges);
-        addLine(`A brief description of your package goes here`);
-
-        addLine('## 📦 Installation');
-        addLine('```bash', 1);
-        addLine(`npm install ${this._packageName}`);
-        addLine(`# or`, 1);
-        addLine(`yarn add install ${this._packageName}`);
-        addLine(`# or`, 1);
-        addLine(`pnpm install ${this._packageName}`, 1);
-        addLine('```');
-
-        addLine('## 🚀 Usage');
-        addLine('...');
-
-        fs.writeFileSync(this._packageDirectory + "/README.md", readmeStr);
+        fs.writeFileSync(this._packageDirectory + "/README.md", readmeContent);
     }
 
     private createLicense = () => {
