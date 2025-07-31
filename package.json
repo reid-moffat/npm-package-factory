@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "lint": "tsc",
-    "build": "tsup src/index.ts --minify --silent --clean",
+    "build": "tsup src/index.ts --minify --silent --clean && cpy src/templates dist/templates --flat",
     "run": "npm run build && node ./dist/",
     "test": "cross-env TS_NODE_PROJECT='./test/tsconfig.test.json' mocha --ui tdd",
     "testScripts": "echo \"Verifying all scritps run...\" && npm run lint && npm run build && npm run test && npm run run",
