@@ -46,7 +46,7 @@ class Generators {
 
     private createReadme = () => {
         // Read the template file
-        const templatePath: string = path.join(__dirname, 'templates', 'README.template.md');
+        const templatePath: string = path.join(__dirname, 'templates', 'README.md');
         const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
         // Replace all placeholders with the actual package name
