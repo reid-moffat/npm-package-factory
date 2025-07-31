@@ -14,7 +14,7 @@
     "scaffolding"
   ],
   "scripts": {
-    "build": "rimraf ./dist && tsup src/index.ts --minify --silent --clean",
+    "build": "tsup src/index.ts --minify --silent --clean",
     "run": "npm run build && node ./dist/index.js",
     "lint": "tsc",
     "test": "cross-env TS_NODE_PROJECT='./test/tsconfig.test.json' mocha --ui tdd",
