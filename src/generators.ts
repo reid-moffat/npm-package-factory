@@ -110,27 +110,20 @@ class Generators {
         fs.mkdirSync(srcDirectory, { recursive: true });
         fs.writeFileSync(srcDirectory + "/index.ts", "");
 
+        // Create basic test file
         const testDirectory = this._packageDirectory + "/test";
         const testBoilerplate = "import { expect } from 'chai';\n\nsuite(\"Suite name\", function() {\n\n" +
             "    test(\"Test name\", function() {\n        expect(true).to.equal(true);\n    });\n});\n";
         fs.mkdirSync(testDirectory, { recursive: true });
         fs.writeFileSync(testDirectory + "/index.test.ts", testBoilerplate);
 
-        const mocharcPath = this._packageDirectory + "/.mocharc.json";
-        const mocharc = {
-            "require": "ts-node/register",
-            "extension": [
-                "ts"
-            ],
-            "spec": "./test/**/*.test{.js,.ts}",
-            "node-option": [
-                "loader=ts-node/esm"
-            ],
-            "recursive": true,
-            "timeout": 5000
-        };
-        fs.writeFileSync(mocharcPath, JSON.stringify(mocharc, null, 2) + "\n");
+        // Create mocha settings
+        const templatePath: string = path.join(__dirname, 'templates', '.mocharc.json');
+        const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
+        fs.writeFileSync(this._packageDirectory + "/.mocharc.json", templateContent);
+
+        // Initialize tsc
         shell.cd(this._packageDirectory);
         shell.exec('tsc --init > nul 2>&1');
 
