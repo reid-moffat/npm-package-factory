@@ -10,7 +10,8 @@
 
 ### Minor Changes
 
-- c4757a9: \* Added badges to the README generation
+- c4757a9:
+  - Added badges to the README generation
   - Install changesets when generating package
   - Added newlines to the end of generated files
   - Added badges to this package's README

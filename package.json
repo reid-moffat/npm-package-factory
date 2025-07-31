@@ -14,10 +14,10 @@
     "scaffolding"
   ],
   "scripts": {
-    "build": "rimraf ./dist && tsup src/index.ts --minify --silent",
-    "run": "npm run build && node ./dist/index.js",
     "lint": "tsc",
+    "build": "tsup src/index.ts --minify --silent --clean && cpy src/templates dist/templates --flat",
     "test": "cross-env TS_NODE_PROJECT='./test/tsconfig.test.json' mocha --ui tdd",
+    "run": "npm run build && node ./dist/",
     "testScripts": "echo \"Verifying all scritps run...\" && npm run lint && npm run build && npm run test && npm run run",
     "deployHelp": "echo 1) Run 'changeset' 2) Merge changes to main 3) Merge changeset PR 4) npm run deploy (verify it looks good)",
     "deploy": "git checkout main && git pull && npm run build && npm publish"
@@ -50,12 +50,16 @@
     "@types/node": "^22.5.5",
     "@types/shelljs": "^0.8.15",
     "@types/validate-npm-package-name": "^4.0.2",
+    "bias-random": "^1.0.2",
     "chai": "^5.1.1",
     "cross-env": "^7.0.3",
+    "generate-arrays": "^2.0.0",
     "mocha": "^10.7.3",
-    "rimraf": "^6.0.1",
+    "npm-package-factory": "^2.2.0",
+    "suite-metrics": "^1.3.1",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2"
-  }
+  },
+  "packageManager": "pnpm@9.10.0"
 }

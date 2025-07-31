@@ -28,6 +28,7 @@ class Generators {
         this.createLicense();
         this.createTodoList();
         this.initGitRepo();
+        this.initChangesets();
         this.initWorkflows();
         process.stdout.write(logSymbols.success + " Development files created    \n");
 
@@ -45,88 +46,28 @@ class Generators {
     }
 
     private createReadme = () => {
+        // Read the template file
+        const templatePath: string = path.join(__dirname, 'templates', 'README.md');
+        const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
-        let badges = '';
-        badges += `[![npm](https://img.shields.io/npm/v/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
-        badges += `[![npm](https://img.shields.io/npm/dt/${this._packageName})](https://www.npmjs.com/package/${this._packageName})\n`;
-        badges += `[![npm](https://img.shields.io/npm/l/${this._packageName})](https://www.npmjs.com/package/${this._packageName})`;
+        // Replace all placeholders with the actual package name
+        const readmeContent: string = templateContent.replace(/{{PACKAGE_NAME}}/g, this._packageName);
 
-        let readmeStr = "";
-        const addLine = (line: string, newlines: number = 2) => readmeStr += line + "\n".repeat(newlines);
-
-        addLine(`# ${this._packageName}`);
-        addLine(badges);
-        addLine(`A brief description of your package goes here`);
-
-        addLine('## 📦 Installation');
-        addLine('```bash', 1);
-        addLine(`npm install ${this._packageName}`);
-        addLine(`# or`, 1);
-        addLine(`yarn add install ${this._packageName}`);
-        addLine(`# or`, 1);
-        addLine(`pnpm install ${this._packageName}`, 1);
-        addLine('```');
-
-        addLine('## 🚀 Usage');
-        addLine('...');
-
-        fs.writeFileSync(this._packageDirectory + "/README.md", readmeStr);
+        fs.writeFileSync(this._packageDirectory + "/README.md", readmeContent);
     }
 
     private createLicense = () => {
-        const license = "MIT License\n" +
-            "\n" +
-            "Copyright (c) [YEAR] [YOUR NAME]\n" +
-            "\n" +
-            "Permission is hereby granted, free of charge, to any person obtaining a copy\n" +
-            "of this software and associated documentation files (the \"Software\"), to deal\n" +
-            "in the Software without restriction, including without limitation the rights\n" +
-            "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n" +
-            "copies of the Software, and to permit persons to whom the Software is\n" +
-            "furnished to do so, subject to the following conditions:\n" +
-            "\n" +
-            "The above copyright notice and this permission notice shall be included in all\n" +
-            "copies or substantial portions of the Software.\n" +
-            "\n" +
-            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n" +
-            "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n" +
-            "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n" +
-            "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n" +
-            "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n" +
-            "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n" +
-            "SOFTWARE.\n";
+        const templatePath: string = path.join(__dirname, 'templates', 'LICENSE');
+        const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
-        fs.writeFileSync(this._packageDirectory + "/LICENSE", license);
+        fs.writeFileSync(this._packageDirectory + "/LICENSE", templateContent);
     }
 
     private createTodoList = () => {
-        const todoList = "# TODO list\n" +
-            "\n" +
-            "Congratulations, your package is almost ready! 🎉\n" +
-            "\n" +
-            "## ⚙️ Package setup:\n" +
-            "\n" +
-            "- In package.json, add the package description, author (your name(s)) and keywords\n" +
-            "- Add you github repository URL to repository -> url in package.json, and issues page on that repo to 'bugs'\n" +
-            "- Update LICENSE file with the year and your name (after copyright)\n" +
-            "- Add any other files/folders you want git to ignore (e.g. IDE files) to the .gitignore file\n" +
-            "\n" +
-            "## 🛠️ Working with your package:\n" +
-            "\n" +
-            "- Add your source code to the src/ folder. You can use index.ts to export everything, then other files for \n" +
-            "  implementations\n" +
-            "- Write comprehensive tests in the test/ folder. Files that end in .test.ts will be included automatically in tests\n" +
-            "- The current setup builds the code into multiple file types (.cjs, .d.cts, .d.ts and .js) to allow for easy \n" +
-            "  importing for different node configurations by people who use your package. tsup will handle this \n" +
-            "  when you run ``npm run build``, minifying (reducing the size) of the code as much as possible - so you don't have \n" +
-            "  to worry about compatibility, writing in typescript is fine and your package can be used by plain js users\n" +
-            "- To test, run ``npm run test``\n" +
-            "- To lint, run ``npm run lint``\n" +
-            "- If your package is ready to deploy, run ``npm run deployHelp`` and follow the steps provided\n" +
-            "\n" +
-            "Note: You'll need to give permissions to the github token so it can make pull requests for changesets\n";
+        const todoPath: string = path.join(__dirname, 'templates', 'TODO.md');
+        const todoContent: string = fs.readFileSync(todoPath, 'utf8');
 
-        fs.writeFileSync(this._packageDirectory + "/TODO.md", todoList);
+        fs.writeFileSync(this._packageDirectory + "/TODO.md", todoContent);
     }
 
     private initGitRepo = () => {
@@ -140,73 +81,27 @@ class Generators {
         this._packageJson.installDependencies();
     }
 
-    private initWorkflows = () => {
+    private initChangesets = () => {
         shell.cd(this._packageDirectory);
         shell.exec('npm i -g @changesets/cli --silent');
         shell.exec('npx changeset init > nul 2>&1');
+    }
 
-        const workflowDirectory = this._packageDirectory + "/.github/workflows";
+    private initWorkflows = () => {
+        // Make workflow directory
+        const workflowDirectory: string = this._packageDirectory + "/.github/workflows";
         fs.mkdirSync(workflowDirectory, { recursive: true });
 
-        const pushYml =
-            "name: CI\n" +
-            "on:\n" +
-            "  push:\n" +
-            "    branches:\n" +
-            "      - \"**\"\n\n" +
-            "jobs:\n" +
-            "  test:\n" +
-            "    runs-on: ubuntu-latest\n" +
-            "    steps:\n" +
-            "      - name: Checkout\n" +
-            "        uses: actions/checkout@v4\n" +
-            "      - name: Setup pnpm\n" +
-            "        uses: pnpm/action-setup@v4\n" +
-            "        with:\n" +
-            "          version: 9.5.0\n" +
-            "      - name: Setup node\n" +
-            "        uses: actions/setup-node@v4\n" +
-            "        with:\n" +
-            "          node-version: 20.x\n" +
-            "          cache: 'pnpm'\n" +
-            "      - name: Install dependencies\n" +
-            "        run: pnpm install --frozen-lockfile\n\n" +
-            "      - name: Run tests\n" +
-            "        run: pnpm run test\n";
-        fs.writeFileSync(workflowDirectory + "/push.yml", pushYml);
+        // Read the template files
+        const testWorkflowPath: string = path.join(__dirname, 'templates', 'test.yml');
+        const testWorkflowContent: string = fs.readFileSync(testWorkflowPath, 'utf8');
 
-        const publishYml =
-            "name: Publish\n" +
-            "on:\n" +
-            "  push:\n" +
-            "    branches:\n" +
-            "      - main\n\n" +
-            "concurrency: ${{ github.workflow }}-${{ github.ref }}\n\n" +
-            "jobs:\n" +
-            "  build:\n" +
-            "    runs-on: ubuntu-latest\n" +
-            "    steps:\n" +
-            "      - name: Checkout\n" +
-            "        uses: actions/checkout@v4\n" +
-            "      - name: Setup pnpm\n" +
-            "        uses: pnpm/action-setup@v4\n" +
-            "        with:\n" +
-            "          version: 9.5.0\n" +
-            "      - name: Setup node\n" +
-            "        uses: actions/setup-node@v4\n" +
-            "        with:\n" +
-            "          node-version: 20.x\n" +
-            "          cache: 'pnpm'\n" +
-            "      - name: Install dependencies\n" +
-            "        run: pnpm install --frozen-lockfile\n\n" +
-            "      - name: Create Release Pull Request or Publish\n" +
-            "        id: changesets\n" +
-            "        uses: changesets/action@v1\n" +
-            "        with:\n" +
-            "          publish: pnpm run build\n" +
-            "        env:\n" +
-            "          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}\n";
-        fs.writeFileSync(workflowDirectory + "/publish.yml", publishYml);
+        const lintWorkflowPath: string = path.join(__dirname, 'templates', 'lint.yml');
+        const lintWorkflowContent: string = fs.readFileSync(lintWorkflowPath, 'utf8');
+
+        // Write template files
+        fs.writeFileSync(workflowDirectory + "/test.yml", testWorkflowContent);
+        fs.writeFileSync(workflowDirectory + "/lint.yml", lintWorkflowContent);
     }
 
     // Creates source directory, test directory & example, mocharc, tsconfig files
@@ -215,27 +110,20 @@ class Generators {
         fs.mkdirSync(srcDirectory, { recursive: true });
         fs.writeFileSync(srcDirectory + "/index.ts", "");
 
+        // Create basic test file
         const testDirectory = this._packageDirectory + "/test";
         const testBoilerplate = "import { expect } from 'chai';\n\nsuite(\"Suite name\", function() {\n\n" +
             "    test(\"Test name\", function() {\n        expect(true).to.equal(true);\n    });\n});\n";
         fs.mkdirSync(testDirectory, { recursive: true });
         fs.writeFileSync(testDirectory + "/index.test.ts", testBoilerplate);
 
-        const mocharcPath = this._packageDirectory + "/.mocharc.json";
-        const mocharc = {
-            "require": "ts-node/register",
-            "extension": [
-                "ts"
-            ],
-            "spec": "./test/**/*.test{.js,.ts}",
-            "node-option": [
-                "loader=ts-node/esm"
-            ],
-            "recursive": true,
-            "timeout": 5000
-        };
-        fs.writeFileSync(mocharcPath, JSON.stringify(mocharc, null, 2) + "\n");
+        // Create mocha settings
+        const templatePath: string = path.join(__dirname, 'templates', '.mocharc.json');
+        const templateContent: string = fs.readFileSync(templatePath, 'utf8');
 
+        fs.writeFileSync(this._packageDirectory + "/.mocharc.json", templateContent);
+
+        // Initialize tsc
         shell.cd(this._packageDirectory);
         shell.exec('tsc --init > nul 2>&1');
 
@@ -306,12 +194,13 @@ class PackageJson {
             "@types/chai",
             "@types/mocha",
             "@types/node",
+            "chai",
             "cross-env",
             "mocha",
-            "chai",
+            "suite-metrics",
+            "ts-node",
             "tsup",
-            "typescript",
-            "ts-node"
+            "typescript"
         ];
         this.packageDirectory = packageDirectory;
     }
